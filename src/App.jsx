@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <p>Mi numero es: {number}</p>
+      <p>Hola mundo {number}</p>
     </>
   )
 }
