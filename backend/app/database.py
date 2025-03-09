@@ -2,30 +2,46 @@ import os
 import mysql.connector
 from dotenv import load_dotenv
 
-# Cargar variables del .env
+# Load environment variables
 load_dotenv()
 
-# Obtener credenciales de MySQL
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Database credentials
+DB_HOST = os.getenv("MYSQL_HOST")
+DB_USER = os.getenv("MYSQL_USER")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD")
+DB_NAME = os.getenv("MYSQL_DATABASE")
+DB_PORT = int(os.getenv("MYSQL_PORT", 3306))
 
-DB_HOST = os.getenv("DB_HOST")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-DB_PORT = os.getenv("DB_PORT", 3306)
-
-# Conectar a MySQL
+# Function to connect to MySQL
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            database=os.getenv("DB_NAME"),
-            port=os.getenv("DB_PORT", 3306)
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME,
+            port=DB_PORT
         )
-        print("✅ Conexión exitosa a MySQL")
         return conn
     except mysql.connector.Error as e:
-        print(f"Error al conectar a MySQL: {e}")
+        print(f"❌ Error al conectar a MySQL: {e}")
         return None
+
+# Function to execute SQL schema file
+def initialize_database():
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor()
+        with open("sql/schemas.sql", "r") as file:
+            sql_commands = file.read().split(";")  # Split queries
+            for command in sql_commands:
+                if command.strip():  # Ignore empty commands
+                    cursor.execute(command)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("✅ Database schema initialized successfully.")
+    else:
+        print("❌ Failed to initialize the database.")
+
+

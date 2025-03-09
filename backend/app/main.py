@@ -1,15 +1,27 @@
 from fastapi import FastAPI
-from app.routes import auth, chat, history
+from app.routes import auth, db_test
+from app.database import initialize_database
 
 app = FastAPI()
 
-# Incluir rutas (endpoints)
+# Initialize database schema
+#initialize_database()
+
+# Include routes
 app.include_router(auth.router)
-app.include_router(chat.router)
-app.include_router(history.router)
+from fastapi import FastAPI
+from app.routes import db_test
+
+app = FastAPI()
+
+# Ensure this line is present
+app.include_router(db_test.router, prefix="/db_test", tags=["Database"])
 
 @app.get("/")
 def home():
     return {"message": "Backend funcionando correctamente"}
 
-# Para correr el servidor: uvicorn app.main:app --reload
+@app.get("/")
+def home():
+    return {"message": "Backend funcionando correctamente"}
+
