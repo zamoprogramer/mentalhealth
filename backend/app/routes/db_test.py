@@ -15,7 +15,7 @@ def list_users():
     return get_users()
 
 # Route to insert a message
-@router.post("/insert_user")
+@router.post("/insert_message")
 def create_user(email: str, password: str, first_name: str, last_name: str):
     return insert_user(email, password, first_name, last_name)
 
