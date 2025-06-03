@@ -6,21 +6,18 @@ import jwt
 import datetime
 
 app = Flask(__name__)
-CORS(app)
 
-# ————— Configuración de MySQL —————
+# Permitir llamadas CORS solo desde tu frontend en desarrollo
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+
 app.config['MYSQL_HOST']     = '127.0.0.1'
 app.config['MYSQL_PORT']     = 3306
-
-# Usuario MySQL: 'cristianarevalo23@gmail.com' con contraseña 'Cristian12345/'
 app.config['MYSQL_USER']     = 'cristianarevalo23@gmail.com'
 app.config['MYSQL_PASSWORD'] = 'Cristian12345/'
 app.config['MYSQL_DB']       = 'mental_health_db'
-
-# Clave secreta para firmar JWT (solo en desarrollo; en producción, mantenla segura)
 app.config['SECRET_KEY']     = 'tu_clave_secreta'
-
 mysql = MySQL(app)
+
 
 # ----------------------------------
 # 1) Ruta de prueba para verificar conexión
@@ -34,7 +31,7 @@ def test_db():
     return jsonify({'servidor_mysql': str(resultado[0])})
 
 # ————— 2) Ruta de registro (/register) —————
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def register():
     datos = request.get_json(force=True)
     nombre   = datos.get('nombre')
@@ -66,7 +63,7 @@ def register():
         return jsonify({'error': str(e)}), 500
 
 # ————— 3) Ruta de login (/login) —————
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     try:
         data = request.get_json(force=True)
